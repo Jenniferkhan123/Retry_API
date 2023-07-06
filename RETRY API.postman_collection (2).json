@@ -1,0 +1,482 @@
+{
+	"info": {
+		"_postman_id": "77a4e3d7-2509-40ff-8351-ce5271ef116f",
+		"name": "RETRY API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27083534"
+	},
+	"item": [
+		{
+			"name": "POST_reference",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var status = pm.response.status;\r",
+							"var start = pm.collectionVariables.set(\"start\");\r",
+							"var end = pm.collectionVariables.set(\"end\");\r",
+							"if(status==\"Created\")\r",
+							"{\r",
+							"   pm.test(\"Status code is 201\",function() {\r",
+							"       pm.response.to.have.status(201);\r",
+							"   });\r",
+							"    \r",
+							"}\r",
+							"else\r",
+							"{\r",
+							"    if(start<end)\r",
+							"    {\r",
+							"        pm.collectionVariables.set(\"start\", eval(start++));\r",
+							"        postman.setNextRequest(\"TC1\");\r",
+							"    }\r",
+							"    else\r",
+							"    {\r",
+							"        postman.setNextRequest1(null);\r",
+							"        pm.collectionVariables.set(\"start\",0);\r",
+							"        pm.test(\"Status code is 201\", function () {\r",
+							"        pm.response.to.have.status(201);\r",
+							"        });\r",
+							"    }\r",
+							"}\r",
+							"\r",
+							"\r",
+							"// Declared the expected result\r",
+							"//Fetch data from  RequestBody\r",
+							"var RequestBody = pm.request.body.raw;\r",
+							"RequestBody = JSON.parse(RequestBody);\r",
+							"\r",
+							"var Req_name = RequestBody.name;\r",
+							"var Req_job = RequestBody.job;\r",
+							"\r",
+							"//Genrate the date in desired format\r",
+							"var actualdate = new Date().toJSON().slice(0, 10);\r",
+							"//var actualdate = new Date().toISOString().slice(0, 10);\r",
+							"\r",
+							"// Validate the responsebody\r",
+							"//extract the data from resposebody\r",
+							"var ResponseBody = pm.response.json();\r",
+							"var Res_name = ResponseBody.name;\r",
+							"var Res_job = ResponseBody.job;\r",
+							"var Res_id = ResponseBody.id;\r",
+							"var Res_createdAt=ResponseBody.createdAt;\r",
+							"Res_createdAt=Res_createdAt.slice(0,10);\r",
+							"\r",
+							"\r",
+							"//Validate the responseBody parameters\r",
+							"pm.test(\"Validate the parameter,name\", function () {\r",
+							"    pm.expect(Res_name).to.eql(Req_name);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate the parameter,job\", function() {\r",
+							"    pm.expect(Res_job).to.eql(Req_job);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate the parameter,id\", function() {\r",
+							"    pm.expect(Res_id).to.not.eql(0);\r",
+							"    pm.expect(Res_id).to.not.null;\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate responsebody partameter,actualdate\",function() {\r",
+							"    pm.expect(Res_createdAt).to.eql(actualdate);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var name=pm.variables.replaceIn('{{$randomFirstName}}');\r",
+							"pm.collectionVariables.set(\"name\",name);\r",
+							"\r",
+							"var job=pm.variables.replaceIn('{{$randomJobTitle}}');\r",
+							"pm.collectionVariables.set(\"job\",job);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"job\": \"{{job}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Post_URL}}",
+					"host": [
+						"{{Post_URL}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PUT_reference",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var status=pm.response.status;\r",
+							"console.log(status);\r",
+							"var countstart=pm.collectionVariables.get(\"start\");\r",
+							"var countend=pm.collectionVariables.get(\"end\");\r",
+							"\r",
+							"if(status==\"OK\")\r",
+							"{\r",
+							"    pm.test(\"status code is 200\",function() {\r",
+							"        pm.response.to.have.status(200);\r",
+							"    });\r",
+							"}\r",
+							"else\r",
+							"{\r",
+							"   if(countstart<countend)\r",
+							"    {\r",
+							"        pm.collectionVariables.set(\"start\",eval(countstart+1));\r",
+							"        postman.setnextRequest(\"New Request\");\r",
+							"    }\r",
+							"    else\r",
+							"    {\r",
+							"       postman.setNextRequest(null)\r",
+							"       pm.collectionVariables.set(\"start\",0);      \r",
+							"       pm.test(\"Status code is 200\",function() {\r",
+							"         pm.response.to.have.status(200);\r",
+							"       });\r",
+							"    }    \r",
+							"}\r",
+							"//Declare the request body\r",
+							"//Fetch data from request body\r",
+							"var requestbody=pm.request.body.raw;\r",
+							"requestbody=JSON.parse(requestbody);\r",
+							"console.log(requestbody);\r",
+							"\r",
+							"var req_name=requestbody.name;\r",
+							"var req_job=requestbody.job;\r",
+							"\r",
+							"//Generate the required date format\r",
+							" var actualdate=new Date().toJSON().slice(0,10);\r",
+							"\r",
+							" //Validate the response body\r",
+							" //Extract data from requestbody\r",
+							" var responsebody=pm.response.json();\r",
+							" //extract responsebody parameter\r",
+							" var res_name=responsebody.name;\r",
+							"var res_job=responsebody.job;\r",
+							"var res_updatedAt=responsebody.updatedAt;\r",
+							"res_updatedAt=res_updatedAt.slice(0,10);\r",
+							"console.log(responsebody);\r",
+							"//Validte responsebody parameters\r",
+							"pm.test(\"Validate responsebody parameter,Name\",function(){\r",
+							"    pm.expect(req_name).to.eql(res_name);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate responsebody parameter,JOB\",function(){\r",
+							"    pm.expect(req_job).to.eql(res_job);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate responsebody parameter,Date\",function(){\r",
+							"    pm.expect(res_updatedAt).to.eql(actualdate);\r",
+							"\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var name=pm.variables.replaceIn('{{$randomFirstName}}');\r",
+							"pm.collectionVariables.set(\"name\",name);\r",
+							"\r",
+							"var job=pm.variables.replaceIn('{{$randomJobTitle}}');\r",
+							"pm.collectionVariables.set(\"job\",job);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"job\": \"{{job}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Put_URL}}",
+					"host": [
+						"{{Put_URL}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PATCH_reference",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var status=pm.response.status;\r",
+							"console.log(status);\r",
+							"var countstart=pm.collectionVariables.get(\"start\");\r",
+							"var countend=pm.collectionVariables.get(\"end\");\r",
+							"\r",
+							"if(status==\"OK\")\r",
+							"{\r",
+							"    pm.test(\"status code is 200\",function() {\r",
+							"        pm.response.to.have.status(200);\r",
+							"    });\r",
+							"}\r",
+							"else\r",
+							"{\r",
+							"   if(countstart<countend)\r",
+							"    {\r",
+							"        pm.collectionVariables.set(\"start\",eval(countstart+1));\r",
+							"        postman.setnextRequest(\"New Request\");\r",
+							"    }\r",
+							"    else\r",
+							"    {\r",
+							"       postman.setNextRequest(null)\r",
+							"       pm.collectionVariables.set(\"start\",0);      \r",
+							"       pm.test(\"Status code is 200\",function() {\r",
+							"         pm.response.to.have.status(200);\r",
+							"       });\r",
+							"    }    \r",
+							"}\r",
+							"//Declare the request body\r",
+							"//Fetch data from request body\r",
+							"var requestbody=pm.request.body.raw;\r",
+							"requestbody=JSON.parse(requestbody);\r",
+							"console.log(requestbody);\r",
+							"\r",
+							"var req_name=requestbody.name;\r",
+							"var req_job=requestbody.job;\r",
+							"\r",
+							"//Generate the required date format\r",
+							" var actualdate=new Date().toJSON().slice(0,10);\r",
+							"\r",
+							" //Validate the response body\r",
+							" //Extract data from requestbody\r",
+							" var responsebody=pm.response.json();\r",
+							" //extract responsebody parameter\r",
+							" var res_name=responsebody.name;\r",
+							"var res_job=responsebody.job;\r",
+							"var res_updatedAt=responsebody.updatedAt;\r",
+							"res_updatedAt=res_updatedAt.slice(0,10);\r",
+							"console.log(responsebody);\r",
+							"//Validte responsebody parameters\r",
+							"pm.test(\"Validate responsebody parameter,Name\",function(){\r",
+							"    pm.expect(req_name).to.eql(res_name);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate responsebody parameter,JOB\",function(){\r",
+							"    pm.expect(req_job).to.eql(res_job);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate responsebody parameter,Date\",function(){\r",
+							"    pm.expect(res_updatedAt).to.eql(actualdate);\r",
+							"\r",
+							"});\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var name=pm.variables.replaceIn('{{$randomFirstName}}');\r",
+							"pm.collectionVariables.set(\"name\",name);\r",
+							"\r",
+							"var job=pm.variables.replaceIn('{{$randomJobTitle}}');\r",
+							"pm.collectionVariables.set(\"job\",job);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"{{name}}\",\r\n    \"job\": \"{{job}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Patch_URL}}",
+					"host": [
+						"{{Patch_URL}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET_reference",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var status=pm.response.status;\r",
+							"var countstart=pm.collectionVariables.get(\"start\");\r",
+							"var countend= pm.collectionVariables.get(\"end\");\r",
+							"\r",
+							"if (status==\"Created\")\r",
+							"{\r",
+							"\r",
+							"    pm.test(\"Status code is 200\", function () {\r",
+							"        pm.response.to.have.status(200);\r",
+							"    });\r",
+							"}\r",
+							"else\r",
+							"{\r",
+							"    if(countstart<countend)\r",
+							"    {    pm.collectionVariables.set(\"start\",eval(countstart+1))\r",
+							"    console.log(pm.collectionVariables.get(\"start\"))\r",
+							"    postman.setNextRequest(\"GET_reference\");\r",
+							"    }\r",
+							"    else\r",
+							"    {\r",
+							"        postman.setNextRequest(null);\r",
+							"        pm.collectionVariables.set(\"start\",0);\r",
+							"        pm.test(\"Status code is 200\", function () {\r",
+							"        pm.response.to.have.status(200);\r",
+							"        });\r",
+							"    }\r",
+							"}\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{Get_URL}}",
+					"host": [
+						"{{Get_URL}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "start",
+			"value": "0"
+		},
+		{
+			"key": "end",
+			"value": "5",
+			"type": "string"
+		},
+		{
+			"key": "name",
+			"value": ""
+		},
+		{
+			"key": "job",
+			"value": ""
+		}
+	]
+}
